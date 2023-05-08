@@ -1,25 +1,63 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useContext } from "react";
+import MedicineList from './MedicineList';
+import MedicineInput from './MedicineInput';
+import Cart from './Cart';
+import MedicineContext from './MedicineContext';
 
-function App() {
+
+const App = () => {
+  const [medicines, setMedicines] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+
+  const addMedicine = (medicine) => {
+    setMedicines([...medicines, medicine]);
+  };
+
+  const addToCart = (medicine) => {
+    setCart([...cart, medicine]);
+  };
+
+  const generateBill = () => {
+    const totalPrice = cart.reduce((acc, medicine) => acc + medicine.price * medicine.quantity, 0);
+    console.log(`Total Price: ${totalPrice}`);
+    setCart([]);
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  const openCart = () => {
+    setCartOpen(true);
+  };
+
+  const closeCart = () => {
+    setCartOpen(false);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <MedicineContext.Provider
+      value={{
+        medicines,
+                cart,
+    addMedicine,
+    addToCart,
+    generateBill,
+    clearCart,
+    openCart,
+    closeCart,
+  }}
+>
+  <div>
+    <h1>Medicine Shop</h1>
+    <button onClick={openCart}>Cart ({cart.length})</button>
+    <MedicineInput />
+    <MedicineList />
+    {cartOpen && <Cart />}
+  </div>
+</MedicineContext.Provider>
+);
+};
 
 export default App;
